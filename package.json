@@ -1,0 +1,28 @@
+{
+	"name": "login-exemple-backend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/server.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/CaioOliveira793/login-exemple-backend.git"
+	},
+	"keywords": [],
+	"author": "Caio Oliveira",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/CaioOliveira793/login-exemple-backend/issues"
+	},
+	"homepage": "https://github.com/CaioOliveira793/login-exemple-backend",
+	"scripts": {
+		"dev": "nodemon",
+		"start": "node src/server.js"
+	},
+	"dependencies": {
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.2"
+	}
+}
