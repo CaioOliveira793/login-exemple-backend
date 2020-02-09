@@ -43,5 +43,32 @@ module.exports = {
 			console.log(err);
 			return res.status(500).send();
 		}
+	},
+
+	async destroy(req, res) {
+		const { id = -1, password } = req.body;
+
+		try {
+			const destroied = await User.destroy({
+				where: {
+					id,
+					password
+				}
+			});
+
+			if (destroied) {
+				return res.json({
+					message: 'user deleted'
+				});
+			}
+
+			return res.status(401).json({
+				message: 'user not deleted'
+			});
+
+		} catch (err) {
+			console.log(err);
+			return res.status(500).send();
+		}
 	}
 }
