@@ -1,4 +1,7 @@
+const { Op } = require('sequelize');
 const User = require('../models/User');
+
+const capitalize = require('../utils/capitalize');
 
 module.exports = {
 	async store(req, res) {
@@ -6,8 +9,8 @@ module.exports = {
 
 		try {
 			const user = await User.create({
-				firstName,
-				lastName,
+				firstName: capitalize(firstName),
+				lastName: capitalize(lastName),
 				email,
 				password
 			});
@@ -20,24 +23,22 @@ module.exports = {
 		}
 	},
 
-	async login(req, res) {
-		const { email, password } = req.body;
+	async index(req, res) {
+		const { page = 1, first = '' } = req.query;
 
 		try {
-			const user = await User.findOne({
+			const users = await User.findAndCountAll({
+				attributes: ['firstName', 'createdAt'],
 				where: {
-					email,
-					password
-				}
+					firstName: {
+						[Op.substring]: capitalize(first)
+					}
+				},
+				limit: 10,
+				offset: (page - 1) * 10,
 			});
 
-			if (user) {
-				return res.json(user);
-			}
-
-			return res.status(401).json({
-				message: 'user not found'
-			});
+			return res.json(users);
 
 		} catch (err) {
 			console.log(err);
