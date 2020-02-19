@@ -46,6 +46,38 @@ module.exports = {
 		}
 	},
 
+	async update(req, res) {
+		const { email, firstName, lastName, password } = req.body;
+		const { id } = req.params;
+
+		try {
+			const updated = await User.update({
+				email,
+				firstName,
+				lastName,
+				password
+			}, {
+				where: {
+					id
+				}
+			});
+
+			if (updated[0]) {
+				return res.json({
+					message: 'user updated'
+				});
+			}
+
+			return res.status(400).json({
+				message: `can not update user ${id}`
+			});
+
+		} catch (err) {
+			console.log(err);
+			return res.status(500).send();
+		}
+	},
+
 	async destroy(req, res) {
 		const { id = -1, password } = req.body;
 
