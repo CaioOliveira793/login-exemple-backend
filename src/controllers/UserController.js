@@ -79,7 +79,8 @@ module.exports = {
 	},
 
 	async destroy(req, res) {
-		const { id = -1, password } = req.body;
+		const { password } = req.body;
+		const { id } = req.params;
 
 		try {
 			const destroied = await User.destroy({
