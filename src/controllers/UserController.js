@@ -46,6 +46,33 @@ module.exports = {
 		}
 	},
 
+	async show(req, res) {
+		const { password = '' } = req.body;
+		const { id } = req.params;
+
+		try {
+			const user = await User.findOne({
+				attributes: ['firstName', 'lastName', 'email', 'password'],
+				where: {
+					id,
+					password
+				}
+			});
+
+			if (user) {
+				return res.json(user);
+			}
+
+			return res.status(400).json({
+				message: `can not find user ${id}`
+			});
+
+		} catch (err) {
+			console.log(err);
+			return res.status(500).send();
+		}
+	},
+
 	async update(req, res) {
 		const { email, firstName, lastName, password } = req.body;
 		const { id } = req.params;
