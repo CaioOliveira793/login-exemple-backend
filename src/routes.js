@@ -1,13 +1,16 @@
 const { Router } = require('express');
 
+const authMiddleware = require('./middlewares/auth');
+
 const UserConroller = require('./controllers/UserController');
-const LoginController = require('./controllers/LoginController');
+const AuthController = require('./controllers/AuthController');
 
 const routes = Router();
 
-routes.post('/login', LoginController.login);
+routes.post('/auth/authenticate', AuthController.authenticate);
+routes.post('/auth/register', AuthController.register);
 
-routes.post('/users', UserConroller.store);
+routes.use('/users', authMiddleware);
 routes.get('/users', UserConroller.index);
 routes.get('/users/:id', UserConroller.show);
 routes.put('/users/:id', UserConroller.update);

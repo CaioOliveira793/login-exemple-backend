@@ -12,4 +12,4 @@ app.use(cors());
 app.use(express.json());
 app.use(routes);
 
-app.listen(process.env.NODE_PORT);
+app.listen(process.env.NODE_PORT || 3333);

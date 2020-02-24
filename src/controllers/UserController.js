@@ -1,28 +1,9 @@
 const { Op } = require('sequelize');
-const User = require('../models/User');
 
+const User = require('../models/User');
 const capitalize = require('../utils/capitalize');
 
 module.exports = {
-	async store(req, res) {
-		const { firstName, lastName, email, password } = req.body;
-
-		try {
-			const user = await User.create({
-				firstName: capitalize(firstName),
-				lastName: capitalize(lastName),
-				email,
-				password
-			});
-
-			return res.json(user);
-
-		} catch (err) {
-			console.log(err);
-			return res.status(500).send();
-		}
-	},
-
 	async index(req, res) {
 		const { page = 1, first = '' } = req.query;
 
@@ -47,29 +28,22 @@ module.exports = {
 	},
 
 	async show(req, res) {
-		const { password = '' } = req.body;
 		const { id } = req.params;
 
 		try {
 			const user = await User.findOne({
-				attributes: ['firstName', 'lastName', 'email', 'password'],
-				where: {
-					id,
-					password
-				}
+				attributes: ['firstName', 'lastName', 'email'],
+				where: { id }
 			});
 
-			if (user) {
-				return res.json(user);
-			}
+			if (user) return res.json(user);
 
-			return res.status(400).json({
-				message: `can not find user ${id}`
-			});
+			return res.status(400).json({ message: `Cannot find user with id ${id}` });
 
 		} catch (err) {
-			console.log(err);
-			return res.status(500).send();
+			return res.status(500).json({
+				error: 'An error has occurred on server during user query'
+			});
 		}
 	},
 
@@ -83,53 +57,42 @@ module.exports = {
 				firstName,
 				lastName,
 				password
-			}, {
-				where: {
-					id
-				}
-			});
+			}, { where: { id } });
 
 			if (updated[0]) {
-				return res.json({
-					message: 'user updated'
-				});
+				return res.json({ message: 'User updated' });
 			}
 
 			return res.status(400).json({
-				message: `can not update user ${id}`
+				message: `Cannot update user with id ${id}`
 			});
 
 		} catch (err) {
-			console.log(err);
-			return res.status(500).send();
+			return res.status(500).json({
+				error: 'An error has occurred on server during user update'
+			});
 		}
 	},
 
 	async destroy(req, res) {
-		const { password } = req.body;
 		const { id } = req.params;
 
 		try {
 			const destroied = await User.destroy({
-				where: {
-					id,
-					password
-				}
+				where: { id }
 			});
 
-			if (destroied) {
-				return res.json({
-					message: 'user deleted'
-				});
-			}
+			if (destroied)
+				return res.json({ message: 'User deleted' });
 
-			return res.status(401).json({
-				message: 'user not deleted'
+			return res.status(500).json({
+				error: `Cannot delete user with id ${id}`
 			});
 
 		} catch (err) {
-			console.log(err);
-			return res.status(500).send();
+			return res.status(500).json({
+				error: 'An error has occurred on server during user delete'
+			});
 		}
 	}
 }
