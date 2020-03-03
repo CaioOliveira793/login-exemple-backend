@@ -16,3 +16,5 @@ services:
     command: yarn dev
     depends_on:
       - postgres
+networks:
+  default:
