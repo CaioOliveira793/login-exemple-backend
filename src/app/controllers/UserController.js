@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 
-const User = require('../models/User');
+const { User } = require('../models');
 const capitalize = require('../utils/capitalize');
 
 module.exports = {
@@ -85,7 +85,7 @@ module.exports = {
 			if (destroied)
 				return res.json({ message: 'User deleted' });
 
-			return res.status(500).json({
+			return res.status(400).json({
 				error: `Cannot delete user with id ${id}`
 			});
 

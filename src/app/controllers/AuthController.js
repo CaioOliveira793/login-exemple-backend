@@ -1,6 +1,6 @@
 const bcryptjs = require('bcryptjs');
 
-const User = require('../models/User');
+const { User } = require('../models');
 const generateToken = require('../utils/generateToken');
 const capitalize = require('../utils/capitalize');
 
@@ -44,13 +44,14 @@ module.exports = {
 				return res.status(400).json({ error: 'User not found' });
 
 			if (!await bcryptjs.compare(password, user.password))
-				return res.status(400).json({ error: 'Invalid password' });
+				return res.status(401).json({ error: 'Invalid password' });
 
 			user.password = undefined;
 
 			return res.json({ user, token: generateToken({ id: user.id }) });
 
 		} catch (err) {
+			console.log(err);
 			return res.status(500).json({
 				error: 'An error has occurred on server during user authentication'
 			});

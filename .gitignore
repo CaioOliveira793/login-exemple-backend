@@ -1,3 +1,6 @@
 node_modules
 
-.env
+yarn-error.log
+
+.env/production.env
+.env/development.env

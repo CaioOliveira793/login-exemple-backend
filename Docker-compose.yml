@@ -1,20 +1,15 @@
 version: '3.7'
 services:
-  postgres:
-    build: ./docker-postgres
-    ports:
-      - '${PG_PORT}:5432'
-    environment:
-      POSTGRES_USER: ${PG_ROOT_USER}
-      POSTGRES_PASSWORD: ${PG_ROOT_PASSWORD}
   nodeapi:
     build: .
+    container_name: nodeapi-dev
     ports:
-      - '${NODE_PORT}:${NODE_PORT}'
+      - '3333:3333'
+    networks:
+      - postgres-network
     volumes:
       - .:/usr/src/app
     command: yarn dev
-    depends_on:
-      - postgres
 networks:
-  default:
+  postgres-network:
+    external: true
