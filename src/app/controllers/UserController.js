@@ -13,7 +13,7 @@ module.exports = {
 				attributes: ['firstName', 'createdAt'],
 				where: {
 					firstName: {
-						[Op.substring]: capitalize(first)
+						[Op.substring]: capitalize(first).split(' ', 1)[0]
 					}
 				},
 				limit: 10,
@@ -63,8 +63,8 @@ module.exports = {
 		try {
 			const [updated] = await User.update({
 				email,
-				firstName: (firstName) ? capitalize(firstName) : undefined,
-				lastName: (lastName) ? capitalize(lastName) : undefined,
+				firstName: (firstName) ? capitalize(firstName).split(' ', 1)[0] : undefined,
+				lastName: (lastName) ? capitalize(lastName).split(' ', 1)[0] : undefined,
 				password: (password) ? await (new User).encryptPassword(password) : undefined
 			}, {
 				where: { id }

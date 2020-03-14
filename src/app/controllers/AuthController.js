@@ -24,8 +24,8 @@ module.exports = {
 				return res.status(400).json({ error: 'User already exists' });
 
 			const user = await User.create({
-				firstName: capitalize(firstName),
-				lastName: capitalize(lastName),
+				firstName: capitalize(firstName).split(' ', 1)[0],
+				lastName: capitalize(lastName).split(' ', 1)[0],
 				email,
 				password: await (new User).encryptPassword(password)
 			});
