@@ -1,3 +1,8 @@
+const bcryptjs = require('bcryptjs');
+const validator = require('validator');
+
+const ROUNDS = 10;
+
 module.exports = (sequelize, DataTypes) => {
 	const User = sequelize.define("User", {
 		firstName: {
@@ -22,6 +27,14 @@ module.exports = (sequelize, DataTypes) => {
 		tableName: 'users',
 		underscored: true
 	});
+
+	User.prototype.encryptPassword = async function(password) {
+		return await bcryptjs.hash(password, ROUNDS);
+	}
+
+	User.prototype.comparePassword = async function(password) {
+		return await bcryptjs.compare(password, this.password);
+	}
 
 	return User;
 };

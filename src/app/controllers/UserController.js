@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 
 const { User } = require('../models');
+const { isEmail } = require('validator');
 const capitalize = require('../utils/capitalize');
 
 module.exports = {
@@ -22,7 +23,6 @@ module.exports = {
 			return res.json(users);
 
 		} catch (err) {
-			console.log(err);
 			return res.status(500).send();
 		}
 	},
@@ -31,14 +31,13 @@ module.exports = {
 		const { id } = req.params;
 
 		try {
-			const user = await User.findOne({
-				attributes: ['firstName', 'lastName', 'email'],
-				where: { id }
+			const user = await User.findByPk(id, {
+				attributes: ['email', 'firstName', 'lastName', 'createdAt', 'updatedAt']
 			});
 
 			if (user) return res.json(user);
 
-			return res.status(400).json({ message: `Cannot find user with id ${id}` });
+			return res.status(400).json({ error: 'User not found' });
 
 		} catch (err) {
 			return res.status(500).json({
@@ -51,20 +50,36 @@ module.exports = {
 		const { email, firstName, lastName, password } = req.body;
 		const { id } = req.params;
 
-		try {
-			const updated = await User.update({
-				email,
-				firstName,
-				lastName,
-				password
-			}, { where: { id } });
+		if (email && !isEmail(email))
+			return res.status(400).json({
+				error: 'Invalid email'
+			});
 
-			if (updated[0]) {
-				return res.json({ message: 'User updated' });
+		if (password && password.length < 8)
+			return res.status(400).json({
+				error: 'Password less than 8 characters'
+			});
+
+		try {
+			const [updated] = await User.update({
+				email,
+				firstName: (firstName) ? capitalize(firstName) : undefined,
+				lastName: (lastName) ? capitalize(lastName) : undefined,
+				password: (password) ? await (new User).encryptPassword(password) : undefined
+			}, {
+				where: { id }
+			});
+
+			if (updated) {
+				const newUser = await User.findByPk(id, {
+					attributes: ['email', 'firstName', 'lastName', 'createdAt', 'updatedAt']
+				});
+
+				return res.json(newUser);
 			}
 
 			return res.status(400).json({
-				message: `Cannot update user with id ${id}`
+				message: 'User not updated'
 			});
 
 		} catch (err) {
@@ -86,7 +101,7 @@ module.exports = {
 				return res.json({ message: 'User deleted' });
 
 			return res.status(400).json({
-				error: `Cannot delete user with id ${id}`
+				error: 'User not deleted'
 			});
 
 		} catch (err) {

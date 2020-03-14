@@ -1,14 +1,21 @@
-const bcryptjs = require('bcryptjs');
-
 const { User } = require('../models');
+const { isEmail } = require('validator');
 const generateToken = require('../utils/generateToken');
 const capitalize = require('../utils/capitalize');
-
-const ROUNDS = 10;
 
 module.exports = {
 	async register(req, res) {
 		const { firstName, lastName, email, password } = req.body;
+
+		if (!isEmail(email))
+			return res.status(400).json({
+				error: 'Invalid email'
+			});
+
+		if (password.length < 8)
+			return res.status(400).json({
+				error: 'Password less than 8 characters'
+			});
 
 		try {
 			const usedEmail = await User.findOne({ where: { email } });
@@ -20,7 +27,7 @@ module.exports = {
 				firstName: capitalize(firstName),
 				lastName: capitalize(lastName),
 				email,
-				password: await bcryptjs.hash(password, ROUNDS)
+				password: await (new User).encryptPassword(password)
 			});
 
 			user.password = undefined;
@@ -28,6 +35,7 @@ module.exports = {
 			return res.status(201).json(user);
 
 		} catch (err) {
+			console.log(err);
 			return res.status(500).json({
 				error: 'An error has occurred on server during user creation'
 			});
@@ -37,13 +45,23 @@ module.exports = {
 	async authenticate(req, res) {
 		const { email, password } = req.body;
 
+		if (!isEmail(email))
+			return res.status(400).json({
+				error: 'Invalid email'
+			});
+
+		if (password.length < 8)
+			return res.status(400).json({
+				error: 'Password less than 8 characters'
+			});
+
 		try {
 			const user = await User.findOne({ where: { email } });
 
 			if (!user)
 				return res.status(400).json({ error: 'User not found' });
 
-			if (!await bcryptjs.compare(password, user.password))
+			if (!(await user.comparePassword(password)))
 				return res.status(401).json({ error: 'Invalid password' });
 
 			user.password = undefined;
@@ -51,7 +69,6 @@ module.exports = {
 			return res.json({ user, token: generateToken({ id: user.id }) });
 
 		} catch (err) {
-			console.log(err);
 			return res.status(500).json({
 				error: 'An error has occurred on server during user authentication'
 			});

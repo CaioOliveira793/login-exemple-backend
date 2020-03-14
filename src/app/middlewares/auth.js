@@ -10,11 +10,11 @@ module.exports = (req, res, next) => {
 	const [ scheme, token ] = authorization.split(' ');
 
 	if (!/^Bearer$/i.test(scheme))
-		return res.status(401).json({ error: 'Token malformatted' });
+		return res.status(401).json({ error: 'Malformatted token' });
 
 	jwt.verify(token, jwtConfig.secret, (err, decoded) => {
 		if (err)
-			return res.status(401).json({ error: 'Token invalid' });
+			return res.status(401).json({ error: 'Invalid token' });
 
 		req.id = decoded.id;
 		return next();
