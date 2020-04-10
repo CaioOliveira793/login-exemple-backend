@@ -7,10 +7,10 @@ const AuthController = require('./app/controllers/AuthController');
 
 const routes = Router();
 
-routes.post('/auth/authenticate', AuthController.authenticate);
-routes.post('/auth/register', AuthController.register);
+routes.post('/session', AuthController.authenticate); // login
 
-routes.use('/users', authMiddleware);
+routes.post('/users', UserConroller.create);
+routes.use('/users', authMiddleware); // authentication
 routes.get('/users', UserConroller.index);
 routes.get('/users/:id', UserConroller.show);
 routes.put('/users/:id', UserConroller.update);
