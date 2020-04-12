@@ -1,4 +1,5 @@
 const bcryptjs = require('bcryptjs');
+const { Joi } = require('celebrate');
 
 const ROUNDS = 10;
 
@@ -37,6 +38,14 @@ module.exports = (sequelize, DataTypes) => {
 		tableName: 'users',
 		underscored: true
 	});
+
+	User.validation = {
+		firstName: () => Joi.string().min(3).max(15).pattern(/^[a-z]+$/i),
+		lastName: () => Joi.string().min(3).max(15).pattern(/^[a-z]+$/i),
+		email: () => Joi.string().max(20).email(),
+		username: () => Joi.string().min(5).max(20).pattern(/^([a-z\d]-?[a-z\d]*)+[^\W_]$/i),
+		password: () => Joi.string().min(8).max(30)
+	}
 
 	User.prototype.comparePassword = function(password) {
 		return bcryptjs.compare(password, this.password);

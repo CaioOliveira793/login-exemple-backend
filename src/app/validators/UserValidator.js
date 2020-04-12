@@ -1,13 +1,14 @@
 const { celebrate, Joi, Segments } = require('celebrate');
+const { User } = require('../models');
 
 module.exports = {
 	create: celebrate({
 		[Segments.BODY]: Joi.object().keys({
-			firstName: Joi.string().required().min(3).max(15).pattern(/^[a-z]+$/i),
-			lastName: Joi.string().required().min(3).max(15).pattern(/^[a-z]+$/i),
-			email: Joi.string().required().max(20).email(),
-			username: Joi.string().required().min(5).max(20).pattern(/^([a-z\d]-?[a-z\d]*)+[^\W_]$/i),
-			password: Joi.string().required().min(8).max(30)
+			firstName: User.validation.firstName().required(),
+			lastName: User.validation.lastName().required(),
+			email: User.validation.email().required(),
+			username: User.validation.username().required(),
+			password: User.validation.password().required()
 		})
 	}),
 
@@ -29,10 +30,10 @@ module.exports = {
 			id: Joi.number().required().min(1)
 		}),
 		[Segments.BODY]: Joi.object().keys({
-			email: Joi.string().max(20).email(),
-			firstName: Joi.string().min(3).max(15).pattern(/^[a-z]+$/i),
-			lastName: Joi.string().min(3).max(15).pattern(/^[a-z]+$/i),
-			password: Joi.string().min(8).max(30)
+			email: User.validation.email(),
+			firstName: User.validation.firstName(),
+			lastName: User.validation.lastName(),
+			password: User.validation.password()
 		})
 	}),
 
