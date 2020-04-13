@@ -1,7 +1,7 @@
 {
 	"name": "login-exemple-backend",
 	"version": "1.0.0",
-	"description": "",
+	"description": "Uma api construída em Node.JS para cadastro e login de usuários",
 	"main": "src/server.js",
 	"repository": {
 		"type": "git",
@@ -23,16 +23,18 @@
 		"bcryptjs": "^2.4.3",
 		"celebrate": "^12.0.1",
 		"cors": "^2.8.5",
+		"cross-env": "^7.0.2",
 		"dotenv": "^8.2.0",
 		"express": "^4.17.1",
 		"jsonwebtoken": "^8.5.1",
 		"pg": "^7.18.1",
 		"pg-hstore": "^2.3.3",
-		"sequelize": "^5.21.4"
+		"sequelize": "^5.21.4",
+		"uuid": "^7.0.3"
 	},
 	"devDependencies": {
-		"cross-env": "^7.0.2",
 		"nodemon": "^2.0.2",
-		"sequelize-cli": "^5.5.1"
+		"sequelize-cli": "^5.5.1",
+		"sqlite3": "^4.1.1"
 	}
 }
