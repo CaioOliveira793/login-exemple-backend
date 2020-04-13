@@ -21,13 +21,13 @@ module.exports = {
 
 	show: celebrate({
 		[Segments.PARAMS]: Joi.object().keys({
-			id: Joi.number().required().min(1)
+			id: Joi.string().guid({ version: ['uuidv4'] }).required()
 		})
 	}),
 
 	update: celebrate({
 		[Segments.PARAMS]: Joi.object().keys({
-			id: Joi.number().required().min(1)
+			id: Joi.string().guid({ version: ['uuidv4'] }).required()
 		}),
 		[Segments.BODY]: Joi.object().keys({
 			email: User.validation.email(),
@@ -39,7 +39,7 @@ module.exports = {
 
 	destroy: celebrate({
 		[Segments.PARAMS]: Joi.object().keys({
-			id: Joi.number().required().min(1)
+			id: Joi.string().guid({ version: ['uuidv4'] }).required()
 		})
 	})
 }

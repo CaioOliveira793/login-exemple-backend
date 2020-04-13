@@ -1,4 +1,5 @@
 const bcryptjs = require('bcryptjs');
+const uuid = require('uuid');
 const { Joi } = require('celebrate');
 
 const ROUNDS = 10;
@@ -30,6 +31,8 @@ module.exports = (sequelize, DataTypes) => {
 	}, {
 		hooks: {
 			afterValidate: async (user) => {
+				user.id = uuid.v4();
+
 				if (user.password)
 					user.password = await bcryptjs.hash(user.password, ROUNDS);
 			}
