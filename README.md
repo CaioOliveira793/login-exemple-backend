@@ -13,6 +13,7 @@ npm run dev
 
 Para testar os endpoints, utilize o cliente HTTP [Insomnia](https://insomnia.rest/).
 
+[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=login-exemple&uri=https%3A%2F%2Fraw.githubusercontent.com%2FCaioOliveira793%2Flogin-exemple-backend%2Fmaster%2FInsomnia.json)
 
 ## Documentação
 
