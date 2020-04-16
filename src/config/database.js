@@ -16,6 +16,9 @@ module.exports = {
 	},
 	production: {
 		dialect: process.env.DB_DIALECT,
+		dialectOptions: {
+  		ssl: true
+		},
 		host: process.env.DB_HOST,
 		port: process.env.DB_PORT,
 		username: process.env.DB_USER,
