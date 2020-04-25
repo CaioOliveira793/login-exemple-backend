@@ -15,7 +15,7 @@ module.exports = {
 	index: celebrate({
 		[Segments.QUERY]: Joi.object().keys({
 			page: Joi.number().integer().min(1),
-			first: Joi.string().pattern(/^[a-z]+$/i)
+			first: Joi.string().empty('').pattern(/^[a-z]+$/i)
 		})
 	}),
 
