@@ -64,7 +64,7 @@ module.exports = {
 
 		if (req.userId != id)
 			return res.status(401).json({
-				error: 'the authenticated user cannot show another user'
+				error: 'The authenticated user cannot show another user'
 			});
 
 		try {
@@ -87,10 +87,18 @@ module.exports = {
 
 		if (req.userId != id)
 			return res.status(401).json({
-				error: 'the authenticated user cannot update another user'
+				error: 'The authenticated user cannot update another user'
 			});
 
 		try {
+			const emailIsUsed = await User.findOne({
+				where: { email: email || '' }
+			});
+
+			if (emailIsUsed) {
+				return res.status(400).json({ error: 'Email is already in use' });
+			}
+
 			const [updated] = await User.update({
 				email,
 				firstName: (firstName) ? capitalize(firstName) : undefined,
@@ -111,6 +119,7 @@ module.exports = {
 			return res.status(400).json({ error: 'User not updated' });
 
 		} catch (err) {
+			console.log(err);
 			return res.status(500).json();
 		}
 	},
@@ -120,7 +129,7 @@ module.exports = {
 
 		if (req.userId != id)
 			return res.status(401).json({
-				error: 'the authenticated user cannot delete another user'
+				error: 'The authenticated user cannot delete another user'
 			});
 
 		try {
