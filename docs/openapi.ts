@@ -1,7 +1,7 @@
 import { OpenAPIObject } from 'openapi3-ts';
 import { schemas } from './schemas';
 import { authentication } from './security';
-import { session, users, users_id } from './paths';
+import { session, users, users_id, users_id_email, users_id_username, users_id_password } from './paths';
 
 
 const openAPI: OpenAPIObject = {
@@ -43,7 +43,10 @@ const openAPI: OpenAPIObject = {
 	paths: {
 		'/session': session,
 		'/users': users,
-		'/users/{id}': users_id
+		'/users/{id}': users_id,
+		'/users/{id}/email': users_id_email,
+		'/users/{id}/username': users_id_username,
+		'/users/{id}/password': users_id_password
 	}
 }
 

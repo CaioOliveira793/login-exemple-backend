@@ -30,10 +30,38 @@ module.exports = {
 			id: Joi.string().guid({ version: ['uuidv4'] }).required()
 		}),
 		[Segments.BODY]: Joi.object().keys({
-			email: User.validation.email(),
 			firstName: User.validation.firstName(),
 			lastName: User.validation.lastName(),
-			password: User.validation.password()
+		})
+	}),
+
+	updateEmail: celebrate({
+		[Segments.PARAMS]: Joi.object().keys({
+			id: Joi.string().guid({ version: ['uuidv4'] }).required()
+		}),
+		[Segments.BODY]: Joi.object().keys({
+			email: User.validation.email().required(),
+			password: User.validation.password().required()
+		})
+	}),
+
+	updateUsername: celebrate({
+		[Segments.PARAMS]: Joi.object().keys({
+			id: Joi.string().guid({ version: ['uuidv4'] }).required()
+		}),
+		[Segments.BODY]: Joi.object().keys({
+			username: User.validation.username().required(),
+			password: User.validation.password().required()
+		})
+	}),
+
+	updatePassword: celebrate({
+		[Segments.PARAMS]: Joi.object().keys({
+			id: Joi.string().guid({ version: ['uuidv4'] }).required()
+		}),
+		[Segments.BODY]: Joi.object().keys({
+			oldPassword: User.validation.password().required(),
+			newPassword: User.validation.password().required()
 		})
 	}),
 
