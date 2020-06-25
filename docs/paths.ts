@@ -19,8 +19,7 @@ export const session: PathItemObject = {
 						type: 'object',
 						maxProperties: 3,
 						properties: {
-							// the propertie name should be "user"
-							username: {
+							user: {
 								oneOf: [
 									schemas.user.properties!.email,
 									schemas.user.properties!.username
@@ -33,16 +32,14 @@ export const session: PathItemObject = {
 						emailAuth: {
 							summary: 'Autenticação com "email"',
 							value: {
-								email: 'name@email.com',
-								username: 'name@email.com',
+								user: 'name@email.com',
 								password: '12345678'
 							}
 						},
 						usernameAuth: {
 							summary: 'Autenticação com "username"',
 							value: {
-								email: 'awesome-user-32',
-								username: 'awesome-user-32',
+								user: 'awesome-user-32',
 								password: '12345678'
 							}
 						}
