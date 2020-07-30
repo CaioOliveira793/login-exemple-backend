@@ -19,8 +19,7 @@ export const session: PathItemObject = {
 						type: 'object',
 						maxProperties: 3,
 						properties: {
-							// the propertie name should be "user"
-							username: {
+							user: {
 								oneOf: [
 									schemas.user.properties!.email,
 									schemas.user.properties!.username
@@ -33,16 +32,14 @@ export const session: PathItemObject = {
 						emailAuth: {
 							summary: 'Autenticação com "email"',
 							value: {
-								email: 'name@email.com',
-								username: 'name@email.com',
+								user: 'name@email.com',
 								password: '12345678'
 							}
 						},
 						usernameAuth: {
 							summary: 'Autenticação com "username"',
 							value: {
-								email: 'awesome-user-32',
-								username: 'awesome-user-32',
+								user: 'awesome-user-32',
 								password: '12345678'
 							}
 						}
@@ -68,7 +65,6 @@ export const session: PathItemObject = {
 										email: schemas.user.properties!.email,
 										firstName: schemas.user.properties!.firstName,
 										lastName: schemas.user.properties!.lastName,
-										password: schemas.user.properties!.password,
 										createdAt: schemas.user.properties!.createdAt,
 										updatedAt: schemas.user.properties!.updatedAt
 									}
@@ -152,7 +148,7 @@ export const users: PathItemObject = {
 	summary: 'Users',
 
 	post: {
-		summary: 'Criação de usuário',
+		summary: 'Cria usuário',
 		description: 'Cria e autentica um novo usuário na aplicação',
 		tags: ['users'],
 		requestBody: {
@@ -209,7 +205,7 @@ export const users: PathItemObject = {
 						schema: {
 							oneOf: [{
 								title: 'Error',
-								description: 'Um usuário com esse email ou senha já existe',
+								description: 'Um usuário com esse email ou username já existe',
 								type: 'object',
 								format: 'error object',
 								minProperties: 1,
@@ -250,7 +246,7 @@ export const users: PathItemObject = {
 	},
 
 	get: {
-		summary: 'Lista de usuários',
+		summary: 'Lista usuários',
 		description: 'Retorna uma lista de usuários',
 		tags: ['users'],
 		security: [{
@@ -419,7 +415,7 @@ export const users_id: PathItemObject = {
 
 	put: {
 		summary: 'Atualiza usuário',
-		description: 'Retorna um usuário atualizado',
+		description: 'Atualiza primeiro e ultimo nome do usuário e o retorna',
 		tags: ['users'],
 		security: [{
 			'authentication': []
@@ -443,25 +439,17 @@ export const users_id: PathItemObject = {
 						properties: {},
 						anyOf: [{
 							properties: {
-								email: schemas.user.properties!.email,
-							}
-						}, {
-							properties: {
 								firstName: schemas.user.properties!.firstName,
 							}
 						}, {
 							properties: {
 								lastName: schemas.user.properties!.lastName,
 							}
-						}, {
-							properties: {
-								password: schemas.user.properties!.password
-							}
 						}]
 					},
 					example: {
-						email: 'test@email.com',
-						firstName: 'Testname'
+						firstName: 'first',
+						lastName: 'last',
 					}
 				}
 			}
@@ -474,6 +462,8 @@ export const users_id: PathItemObject = {
 						schema: {
 							...schemas.user,
 							properties: {
+								id: schemas.user.properties!.id,
+								username: schemas.user.properties!.username,
 								email: schemas.user.properties!.email,
 								firstName: schemas.user.properties!.firstName,
 								lastName: schemas.user.properties!.lastName,
@@ -489,39 +479,17 @@ export const users_id: PathItemObject = {
 				content: {
 					'application/json': {
 						schema: {
-							oneOf: [{
-								title: 'Error',
-								description: 'Um usuário com esse email já existe',
-								type: 'object',
-								format: 'error object',
-								minProperties: 1,
-								properties: {
-									error: {
-										type: 'string',
-										example: 'Email is already in use'
-									}
-								}
-							},
-							schemaHelpers.validationError
-							],
+							...schemaHelpers.validationError
 						},
-						examples: {
-							existentEmail: {
-								summary: 'Email já em uso',
-								value: {
-									error: 'Email is already in use'
-								}
-							},
-							validationError: {
-								summary: 'Erro de validação',
-								value: {
-									statusCode: 400,
-									error: "Bad Request",
-									message: "\"createdAt\" is not allowed",
-									validation: {
-										source: "body",
-										keys: ["createdAt"]
-									}
+						example: {
+							summary: 'Erro de validação',
+							value: {
+								statusCode: 400,
+								error: "Bad Request",
+								message: "\"createdAt\" is not allowed",
+								validation: {
+									source: "body",
+									keys: ["createdAt"]
 								}
 							}
 						}
@@ -613,6 +581,382 @@ export const users_id: PathItemObject = {
 								summary: 'Token negado',
 								value: {
 									error: 'The authenticated user cannot delete another user'
+								}
+							}
+						}
+					}
+				}
+			} as ResponseObject
+		}
+	}
+}
+
+export const users_id_email: PathItemObject = {
+	description: 'Operações nos usuários',
+	summary: 'Users',
+
+	patch: {
+		summary: 'Atualiza email do usuário',
+		description: 'Atualiza o email do usuário e o retorna',
+		tags: ['users'],
+		security: [{
+			'authentication': []
+		}],
+		parameters: [{
+			in: 'path',
+			name: 'id',
+			description: 'id do usuário',
+			style: 'simple',
+			schema: {
+				...schemas.user.properties!.id
+			}
+		}],
+		requestBody: {
+			description: 'Novo email do usuário',
+			required: true,
+			content: {
+				'application/json': {
+					schema: {
+						properties: {
+							email: schemas.user.properties!.email,
+							password: schemas.user.properties!.password
+						}
+					}
+				}
+			}
+		},
+		responses: {
+			'200': {
+				description: 'Email do usuário atualizado',
+				content: {
+					'application/json': {
+						schema: {
+							...schemas.user,
+							properties: {
+								id: schemas.user.properties!.id,
+								username: schemas.user.properties!.username,
+								email: schemas.user.properties!.email,
+								firstName: schemas.user.properties!.firstName,
+								lastName: schemas.user.properties!.lastName,
+								createdAt: schemas.user.properties!.createdAt,
+								updatedAt: schemas.user.properties!.updatedAt
+							}
+						}
+					}
+				}
+			} as ResponseObject,
+			'400': {
+				description: 'Erro no corpo da requisição',
+				content: {
+					'application/json': {
+						schema: {
+							oneOf: [{
+									title: 'Error',
+									description: 'Um usuário com esse email já existe',
+									type: 'object',
+									format: 'error object',
+									minProperties: 1,
+									properties: {
+										error: {
+											type: 'string',
+											example: 'Email is already in use'
+										}
+									}
+								},
+								schemaHelpers.validationError
+							]
+						},
+						examples: {
+							notFound: {
+								summary: 'Email já esta em uso',
+								value: {
+									error: 'Email is already in use'
+								}
+							},
+							validationError: {
+								summary: 'Erro de validação',
+								value: {
+									statusCode: 400,
+									error: "Bad Request",
+									message: "\"email\" must be a valid email",
+									validation: {
+										source: "body",
+										keys: ["email"]
+									}
+								}
+							}
+						}
+					}
+				}
+			} as ResponseObject,
+			'401': {
+				description: 'Erro de atenticação',
+				content: {
+					'application/json': {
+						schema: schemaHelpers.authenticationError,
+						examples: {
+							noTokenProvided: {
+								summary: 'Nenhum token enviado',
+								value: {
+									error: 'No token provided'
+								}
+							},
+							malformatedToken: {
+								summary: 'Token malformatado',
+								value: {
+									error: 'Malformatted token'
+								}
+							},
+							invalidToken: {
+								summary: 'Token inválido',
+								value: {
+									error: 'Invalid token'
+								}
+							},
+							deniedToken: {
+								summary: 'Token negado',
+								value: {
+									error: 'The authenticated user cannot update another user'
+								}
+							},
+							invalidPassword: {
+								summary: 'Senha invalida',
+								value: {
+									error: 'Invalid password'
+								}
+							}
+						}
+					}
+				}
+			} as ResponseObject
+		}
+	}
+}
+
+export const users_id_username: PathItemObject = {
+	description: 'Operações nos usuários',
+	summary: 'Users',
+
+	patch: {
+		summary: 'Atualiza o nome de usuário',
+		description: 'Atualiza o nome de usuário e o retorna',
+		tags: ['users'],
+		security: [{
+			'authentication': []
+		}],
+		parameters: [{
+			in: 'path',
+			name: 'id',
+			description: 'id do usuário',
+			style: 'simple',
+			schema: {
+				...schemas.user.properties!.id
+			}
+		}],
+		requestBody: {
+			description: 'Novo nome de usuário',
+			required: true,
+			content: {
+				'application/json': {
+					schema: {
+						properties: {
+							username: schemas.user.properties!.username,
+							password: schemas.user.properties!.password
+						}
+					}
+				}
+			}
+		},
+		responses: {
+			'200': {
+				description: 'Username do usuário atualizado',
+				content: {
+					'application/json': {
+						schema: {
+							...schemas.user,
+							properties: {
+								id: schemas.user.properties!.id,
+								username: schemas.user.properties!.username,
+								email: schemas.user.properties!.email,
+								firstName: schemas.user.properties!.firstName,
+								lastName: schemas.user.properties!.lastName,
+								createdAt: schemas.user.properties!.createdAt,
+								updatedAt: schemas.user.properties!.updatedAt
+							}
+						}
+					}
+				}
+			} as ResponseObject,
+			'400': {
+				description: 'Erro no corpo da requisição',
+				content: {
+					'application/json': {
+						schema: {
+							oneOf: [{
+									title: 'Error',
+									description: 'Um usuário com esse username já existe',
+									type: 'object',
+									format: 'error object',
+									minProperties: 1,
+									properties: {
+										error: {
+											type: 'string',
+											example: 'Username is already in use'
+										}
+									}
+								},
+								schemaHelpers.validationError
+							]
+						},
+						examples: {
+							notFound: {
+								summary: 'Username já esta em uso',
+								value: {
+									error: 'Username is already in use'
+								}
+							},
+							validationError: {
+								summary: 'Erro de validação',
+								value: {
+									statusCode: 400,
+									error: "Bad Request",
+									message: "\"username\" is required",
+									validation: {
+										source: "body",
+										keys: ["username"]
+									}
+								}
+							}
+						}
+					}
+				}
+			} as ResponseObject,
+			'401': {
+				description: 'Erro de atenticação',
+				content: {
+					'application/json': {
+						schema: schemaHelpers.authenticationError,
+						examples: {
+							noTokenProvided: {
+								summary: 'Nenhum token enviado',
+								value: {
+									error: 'No token provided'
+								}
+							},
+							malformatedToken: {
+								summary: 'Token malformatado',
+								value: {
+									error: 'Malformatted token'
+								}
+							},
+							invalidToken: {
+								summary: 'Token inválido',
+								value: {
+									error: 'Invalid token'
+								}
+							},
+							deniedToken: {
+								summary: 'Token negado',
+								value: {
+									error: 'The authenticated user cannot update another user'
+								}
+							},
+							invalidPassword: {
+								summary: 'Senha invalida',
+								value: {
+									error: 'Invalid password'
+								}
+							}
+						}
+					}
+				}
+			} as ResponseObject
+		}
+	}
+}
+
+export const users_id_password: PathItemObject = {
+	description: 'Operações nos usuários',
+	summary: 'Users',
+
+	patch: {
+		summary: 'Atualiza senha do usuário',
+		description: 'Atualiza senha do usuário e o retorna',
+		tags: ['users'],
+		security: [{
+			'authentication': []
+		}],
+		parameters: [{
+			in: 'path',
+			name: 'id',
+			description: 'id do usuário',
+			style: 'simple',
+			schema: {
+				...schemas.user.properties!.id
+			}
+		}],
+		requestBody: {
+			description: 'Nova senha do usuário',
+			required: true,
+			content: {
+				'application/json': {
+					schema: {
+						properties: {
+							oldPassword: schemas.user.properties!.password,
+							newPassword: schemas.user.properties!.password
+						}
+					}
+				}
+			}
+		},
+		responses: {
+			'204': {
+				description: 'A senha do usuário foi atualizada'
+			} as ResponseObject,
+			'400': {
+				description: 'Erro no corpo da requisição',
+				content: {
+					'application/json': {
+						schema: {
+							...schemaHelpers.validationError
+						}
+					}
+				}
+			} as ResponseObject,
+			'401': {
+				description: 'Erro de atenticação',
+				content: {
+					'application/json': {
+						schema: schemaHelpers.authenticationError,
+						examples: {
+							noTokenProvided: {
+								summary: 'Nenhum token enviado',
+								value: {
+									error: 'No token provided'
+								}
+							},
+							malformatedToken: {
+								summary: 'Token malformatado',
+								value: {
+									error: 'Malformatted token'
+								}
+							},
+							invalidToken: {
+								summary: 'Token inválido',
+								value: {
+									error: 'Invalid token'
+								}
+							},
+							deniedToken: {
+								summary: 'Token negado',
+								value: {
+									error: 'The authenticated user cannot update another user'
+								}
+							},
+							invalidPassword: {
+								summary: 'Senha invalida',
+								value: {
+									error: 'Invalid password'
 								}
 							}
 						}
